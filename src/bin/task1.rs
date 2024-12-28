@@ -1,4 +1,4 @@
-use std::fs;
+use std::fs::File;
 use serde::Deserialize;
 use solana_client::rpc_client::RpcClient;
 use solana_sdk::pubkey::Pubkey;
@@ -48,10 +48,7 @@ async fn get_balances(wallets: Vec<String>, client: &'static RpcClient) -> Vec<W
 
 #[tokio::main]
 async fn main() {
-    let config_path = "config1.yaml";
-
-    let config_content = fs::read_to_string(config_path).expect("Failed to read config.yaml");
-    let config: Config = serde_yaml::from_str(&config_content).expect("Failed to parse config.yaml");
+    let config: Config = serde_yaml::from_reader(File::open("config1.yaml").unwrap()).expect("Failed to parse config.yaml");
 
     let client = RpcClient::new(config.url);
     let client = Box::leak(Box::new(client));
